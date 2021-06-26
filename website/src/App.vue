@@ -15,14 +15,6 @@
           width="40"
         />
         <h1>Brought to you by the fledglings</h1>
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
       </div>
 
       <v-spacer></v-spacer>
@@ -38,7 +30,21 @@
     </v-app-bar>
 
     <v-main>
-      <annitest/>
+      <dashboard/>
+      <v-row>
+            <v-col md="12">    
+                <v-row no-gutters>
+                    <v-col md="2"></v-col>
+                    <v-col md="3">
+                        <v-card tile flat color="error">Stats here</v-card>
+                    </v-col>
+                    <v-col md="5">
+                        <backups/>
+                    </v-col>
+                    <v-col md="2"></v-col>
+                </v-row>
+            </v-col>
+        </v-row>
       <HelloWorld/>
     </v-main>
   </v-app>
@@ -46,14 +52,16 @@
 
 <script>
 import HelloWorld from './components/HelloWorld';
-import annitest from './components/annitest';
+import dashboard from './components/dashboard';
+import backups from './components/backups';
 
 export default {
   name: 'App',
 
   components: {
     HelloWorld,
-    annitest,
+    dashboard,
+    backups,
   },
 
   data: () => ({
