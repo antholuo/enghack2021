@@ -1,6 +1,12 @@
 <template>
     <div class="md-layout">
         <v-container>
+            <v-img
+                :src="require('../assets/logo.svg')"
+                class="my-3"
+                contain
+                height="200"
+                />
             <v-row>
             <v-col></v-col>
             <v-col md="8">
@@ -49,16 +55,28 @@
                         </v-col>
                     </v-row>
                 </v-container>
-
-
             </v-card>
-            <v-row align="center" justify="center">
+            <v-row class="py-2" justify="center">
                 THERE CAN BE MORE TEXT HERE
             </v-row>
             </v-col>
             <v-col></v-col>
             </v-row>
         </v-container>
+        <v-row>
+            <v-col md="12">    
+                <v-row no-gutters>
+                    <v-col md="2"></v-col>
+                    <v-col md="3">
+                        <v-card dark tile flat color="error">Stats here</v-card>
+                    </v-col>
+                    <v-col md="5">
+                        <v-card dark tile flat color="pink darken-4">List of backups here</v-card>
+                    </v-col>
+                    <v-col md="2"></v-col>
+                </v-row>
+            </v-col>
+        </v-row>
     </div>
 </template>
 
