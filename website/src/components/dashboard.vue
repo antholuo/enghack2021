@@ -68,10 +68,42 @@
                 <v-row no-gutters>
                     <v-col md="2"></v-col>
                     <v-col md="3">
-                        <v-card dark tile flat color="error">Stats here</v-card>
+                        <v-card tile flat color="error">Stats here</v-card>
                     </v-col>
                     <v-col md="5">
-                        <v-card dark tile flat color="pink darken-4">List of backups here</v-card>
+                        <v-card class="px-8" tile flat>
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                        <v-list-item-title class="text-h6">
+                                            List of Backups
+                                        </v-list-item-title>
+                                        <v-list-item-subtitle>
+                                            subtext
+                                        </v-list-item-subtitle>
+                                        </v-list-item-content>
+                                    </v-list-item>
+
+                                    <v-divider></v-divider>
+
+                                    <v-list
+                                        dense
+                                        nav
+                                    >
+                                        <v-list-item
+                                        v-for="item in items"
+                                        :key="item.title"
+                                        link
+                                        >
+                                        <v-list-item-icon>
+                                            <v-icon>{{ item.icon }}</v-icon>
+                                        </v-list-item-icon>
+
+                                        <v-list-item-content>
+                                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                        </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+                        </v-card>
                     </v-col>
                     <v-col md="2"></v-col>
                 </v-row>
@@ -92,6 +124,12 @@ export default {
         'center',
         'end',
       ],
+      selectedItem: 1,
+      items: [
+          { title: 'Dashboard', icon: 'mdi-view-dashboard' },
+          { title: 'Photos', icon: 'mdi-image' },
+          { title: 'About', icon: 'mdi-help-box' },
+        ],
     })
 }
 </script>
