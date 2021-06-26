@@ -99,7 +99,28 @@
                                         </v-list-item-icon>
 
                                         <v-list-item-content>
-                                            <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                            <v-row>
+                                                <v-col>
+                                                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                                                </v-col>
+                                                <v-col align="end">
+                                                    <v-btn
+                                                    :loading="loading3"
+                                                    :disabled="loading3"
+                                                    color="blue-grey"
+                                                    class="ma-2 white--text"
+                                                    @click="loader = 'loading2'"
+                                                    >
+                                                    Image
+                                                    <v-icon
+                                                        right
+                                                        light
+                                                    >
+                                                        mdi-download
+                                                    </v-icon>
+                                                    </v-btn>
+                                                </v-col>
+                                            </v-row>
                                         </v-list-item-content>
                                         </v-list-item>
                                     </v-list>
