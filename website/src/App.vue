@@ -38,8 +38,8 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
       <annitest/>
+      <HelloWorld/>
     </v-main>
   </v-app>
 </template>
