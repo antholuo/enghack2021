@@ -1,14 +1,19 @@
 import os
 import subprocess
+import shutil
 
-import apt
-import apt_pkg
+try:
+    import apt
+    import apt_pkg
+except:
+    print("not running in linux")
 from consts import app_name, dev
 
 home_dir = os.path.expanduser("~")
 repo_location = os.getcwd() + "/cache" if dev else f"{home_dir}/.cache/{app_name}"
 
 
+# Helper functions
 def run_shell(cmd):
     return subprocess.run(cmd.split(" "), stdout=subprocess.PIPE, text=True).stdout
 
@@ -23,8 +28,8 @@ def write_output(file_name, cmd):
         f.write(run_shell(cmd))
 
 
-def create_repo(git_remote, username, password):
-    os.chdir(repo_location)
+def create_repo(git_remote, username, password, repo):
+    os.chdir(repo)
     os.system(f'git init')
     write(".gitignore", "**/*Cache*\n**/*cache*")
     # Format: https://username:password@myrepository.biz/file.git
@@ -34,13 +39,11 @@ def create_repo(git_remote, username, password):
     os.system("git pull --all --allow-unrelated-histories")
 
 
-def push_repo(git_remote, username, password):
-    os.chdir(repo_location)
+def push_repo(repo):
+    os.chdir(repo)
     branch = os.path.basename(run_shell("git branch -r"))
     os.system('git add .')
     os.system('git commit -am "commit"')
-    # Format: https://username:password@myrepository.biz/file.git
-    credential_url = f'{git_remote.split("//")[0]}//{username}:{password}@{git_remote.split("//")[1]}'
     os.system(f'git merge --allow-unrelated-histories -m "" -s ours origin/{branch}')
     os.system('git commit -am "commit"')
     os.system(f'git branch -M {branch}')
@@ -73,17 +76,6 @@ def get_apt_packages():
     file.close()
 
 
-def backup(git_remote, username, password):
-    os.mkdir(repo_location)
-    create_repo(git_remote, username, password)
-    write_output('dconf-backup.txt', 'dconf dump /')
-    get_apt_packages()
-    write_output('flatpak.list', 'flatpak list --app --columns application')
-    write("snap.list", os.popen("snap list | awk '!/disabled/{print $1}' | awk '{if(NR>1)print}'").read())
-    get_app_data()
-    push_repo(git_remote, username, password)
-
-
 def install_apt_packages():
     os.system(f'sudo cp -Rpu {repo_location}/source.list.d /etc/apt/sources.list.d/')
     os.system(f'sudo cp -Rpu {repo_location}/sources.list /etc/apt/sources.list ')
@@ -99,8 +91,43 @@ def restore_app_data():
         run_shell(f'rsync --recursive {dir} {home_dir}/{dir}')
 
 
-def restore():
+# Non-helper functions
+def backup(git_remote, username, password):
+    try:
+        os.mkdir(repo_location)
+    except:
+        pass
+    create_repo(git_remote, username, password, repo_location)
+    write_output('dconf-backup.txt', 'dconf dump /')
+    get_apt_packages()
+    write_output('flatpak.list', 'flatpak list --app --columns application')
+    write("snap.list", os.popen("snap list | awk '!/disabled/{print $1}' | awk '{if(NR>1)print}'").read())
+    get_app_data()
+    push_repo(repo_location)
+
+
+def load_repo(git_remote, username, password):
+    try:
+        os.mkdir(repo_location)
+    except:
+        pass
     os.chdir(repo_location)
+    # Format: https://username:password@myrepository.biz/file.git
+    credential_url = f'{git_remote.split("//")[0]}//{username}:{password}@{git_remote.split("//")[1]}'
+    remote = run_shell('git config --get remote.origin.url')
+    if credential_url == remote:
+        os.system('git pull')
+    else:
+        shutil.rmtree(repo_location)
+        os.system('git clone credential_url .')
+
+
+def restore():
+    try:
+        os.chdir(repo_location)
+    except:
+        print("Image does not exist")
+        exit(1)
     install_apt_packages()
     with open(f'{repo_location}/flatpak.list', 'r') as file:
         for line in file.readlines():
@@ -113,5 +140,4 @@ def restore():
     restore_app_data()
     run_shell("dconf load / < donf-backup.txt")
 
-restore_app_data()
-# backup("https://gitlab.com/NeverLucky123/personal.git", "NeverLucky123", "Lol.com135")
+load_repo()
