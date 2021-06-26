@@ -1,25 +1,12 @@
 <template>
     <div class="md-layout">
         <v-container>
-            <v-card class="my-8 mx-auto"
+            <v-row>
+            <v-col></v-col>
+            <v-col md="8">
+            <v-card class="my-8 mx-12"
             elevation=2
             shaped>
-                <v-card-actions>
-                    <v-row align="center"
-                    justify="end">
-                    <v-btn
-                        color="orange"
-                        text>
-                        Share
-                    </v-btn>
-                    </v-row>
-                </v-card-actions>
-                <v-row align="center"
-                justify="start">
-                <v-card-title>This is the dashboard!</v-card-title>
-                <v-card-subtitle>Here you'll find all the information about the last backups at a glance</v-card-subtitle>
-                </v-row>
-
 
                 <v-container
                     class="grey lighten-5 mb-6"
@@ -27,7 +14,8 @@
                     <v-row
                         align="center"
                     >
-                        <v-col>
+                        <v-col
+                        align="center">
                             <v-progress-circular
                                 :value="100"
                                 color="blue-grey"
@@ -35,17 +23,38 @@
                                 width="35"
                             ></v-progress-circular>
                         </v-col>
-                        <v-col>
-                            Should contain brief overview
+                        <v-col
+                        align="center"
+                        md="6">
+                            <v-card-title>Status: Backed Up</v-card-title>
                         </v-col>
-                        <v-col>
-                            Should contain a button to image OS
+                        <v-col align="center">
+                            <v-card-actions>
+                                <v-btn
+                                :loading="loading3"
+                                :disabled="loading3"
+                                color="blue-grey"
+                                class="ma-2 white--text"
+                                @click="loader = 'loading3'"
+                                >
+                                Backup
+                                <v-icon
+                                    right
+                                    dark
+                                >
+                                    mdi-cloud-upload
+                                </v-icon>
+                                </v-btn>
+                            </v-card-actions>
                         </v-col>
                     </v-row>
                 </v-container>
 
 
             </v-card>
+            </v-col>
+            <v-col></v-col>
+            </v-row>
         </v-container>
     </div>
 </template>
