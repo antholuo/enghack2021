@@ -1,9 +1,9 @@
-import shutil
+import os
+import subprocess
 
 import apt
-import subprocess
+import apt_pkg
 from consts import app_name, dev
-import os
 
 home_dir = os.path.expanduser("~")
 repo_location = os.getcwd() + "/cache" if dev else f"{home_dir}/.cache/{app_name}"
@@ -47,11 +47,18 @@ def push_repo(git_remote, username, password):
     os.system(f'git push --set-upstream origin {branch}')
 
 
-def run(git_remote, username, password):
-    # Git
-    create_repo(git_remote, username, password)
-    # Gnome registry
-    write_output('dconf-backup.txt', 'dconf dump /')
+def get_app_data():
+    dirs = ".config .var .local/share/gnome-shell .local/share/fonts \
+    .local/share/backgrounds .local/share/applications .local/share/icons .local/share/keyrings snap".split()
+    dirs[:] = [f"{home_dir}/" + d for d in dirs]
+    os.popen(f'cp -Rpu {" ".join(dirs)} {repo_location}')
+
+
+def get_apt_packages():
+    # Apt repos and keys
+    run_shell(f'cp -Rpu /etc/apt/sources.list.d/ {repo_location}')
+    run_shell(f'cp -Rpu /etc/apt/sources.list {repo_location}')
+    write_output('repo.keys', 'apt-key exportall')
     # Apt packages
     user_installed = []
     packages = apt.Cache()
@@ -64,21 +71,47 @@ def run(git_remote, username, password):
                 user_installed.append(name)
                 file.write(name + '\n')
     file.close()
-    # Apt repos and keys
-    os.system(f'cp -Rpu /etc/apt/sources.list.d/ {repo_location}')
-    os.system(f'cp -Rpu /etc/apt/sources.list {repo_location}')
-    write_output('repo.keys', 'apt-key exportall')
-    # Flatpaks
+
+
+def backup(git_remote, username, password):
+    os.mkdir(repo_location)
+    create_repo(git_remote, username, password)
+    write_output('dconf-backup.txt', 'dconf dump /')
+    get_apt_packages()
     write_output('flatpak.list', 'flatpak list --app --columns application')
-    # Snaps
     write("snap.list", os.popen("snap list | awk '!/disabled/{print $1}' | awk '{if(NR>1)print}'").read())
-    # Appdata
-    dirs = ".config .var .local/share/gnome-shell .local/share/fonts \
-    .local/share/backgrounds .local/share/applications .local/share/icons .local/share/keyrings snap".split()
-    dirs[:] = [f"{home_dir}/" + d for d in dirs]
-    os.popen(f'cp -Rpu {" ".join(dirs)} {repo_location}')
-    # Push
+    get_app_data()
+    push_repo(git_remote, username, password)
 
 
-create_repo("https://gitlab.com/NeverLucky123/personal.git", "NeverLucky123", "Lol.com135")
-push_repo("https://gitlab.com/NeverLucky123/personal.git", "NeverLucky123", "Lol.com135")
+def install_apt_packages():
+    os.system(f'sudo cp -Rpu {repo_location}/source.list.d /etc/apt/sources.list.d/')
+    os.system(f'sudo cp -Rpu {repo_location}/sources.list /etc/apt/sources.list ')
+    os.system(f'sudo apt-key add {repo_location}/repo.keys')
+    os.system(f'sudo xargs -a packageList.txt apt-get install --ignore-missing -y -q')
+
+
+def restore_app_data():
+    os.chdir(repo_location)
+    subdirs = next(os.walk('.'))[1]
+    subdirs.remove('sources.list.d')
+    for dir in subdirs:
+        run_shell(f'rsync --recursive {dir} {home_dir}/{dir}')
+
+
+def restore():
+    os.chdir(repo_location)
+    install_apt_packages()
+    with open(f'{repo_location}/flatpak.list', 'r') as file:
+        for line in file.readlines():
+            while line != '':
+                run_shell(f'flatpak install flathub {line} -y --noninteractive')
+    with open(f'{repo_location}/snap.list', 'r') as file:
+        for line in file.readlines():
+            while line != '':
+                run_shell(f'sudo snap install {line} --classic')
+    restore_app_data()
+    run_shell("dconf load / < donf-backup.txt")
+
+restore_app_data()
+# backup("https://gitlab.com/NeverLucky123/personal.git", "NeverLucky123", "Lol.com135")
