@@ -1,151 +1,123 @@
 <template>
-  <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
-        <v-img
-          :src="require('../assets/temp_keyb.jpg')"
-          class="my-3"
-          contain
-          height="200"
-        />
-      </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="display-2 font-weight-bold mb-3">
-          This should be something completely different
-        </h1>
-
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a
-            href="https://community.vuetifyjs.com"
-            target="_blank"
-          >Discord Community</a>
-        </p>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          What's next?
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Important Links
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-row>
-      </v-col>
-
-      <v-col
-        class="mb-5"
-        cols="12"
-      >
-        <h2 class="headline font-weight-bold mb-3">
-          Ecosystem
-        </h2>
-
-        <v-row justify="center">
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-row>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div>
+    <h3>Spacing</h3>
+    <v-card class="mt-5 mb-8">
+      <v-card-text>
+        <v-container
+          class="spacing-playground py-0 px-2"
+          fluid
+        >
+          <v-row>
+            <v-col
+              cols="12"
+              sm="6"
+              class="d-flex align-center"
+            >
+              <v-select
+                v-model="paddingDirection"
+                :items="directions"
+                label="Padding"
+                class="pr-2"
+              >
+                <template v-slot:prepend>
+                  <strong class="primary--text">p</strong>
+                </template>
+                <template v-slot:append-outer>
+                  <div> - </div>
+                </template>
+              </v-select>
+              <v-select
+                v-model="paddingSize"
+                :items="paddingSizes.slice(1)"
+                label="Size"
+              ></v-select>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              class="d-flex"
+            >
+              <v-select
+                v-model="marginDirection"
+                :items="directions"
+                label="Margin"
+                class="pr-2"
+              >
+                <template v-slot:prepend>
+                  <strong class="primary--text">m</strong>
+                </template>
+                <template v-slot:append-outer>
+                  <div> - </div>
+                </template>
+              </v-select>
+              <v-select
+                v-model="marginSize"
+                :items="marginSizes"
+                label="Size"
+              ></v-select>
+            </v-col>
+            <v-col
+              cols="12"
+              class="orange lighten-3 pa-0"
+            >
+              <v-card
+                :class="[computedMargin]"
+                class="elevation-4"
+              >
+                <div
+                  :class="[computedPadding]"
+                  class="light-green lighten-3"
+                >
+                  <div
+                    class="white text-center"
+                    v-text="playgroundText"
+                  ></div>
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
-  export default {
-    name: 'annitest',
+// CREDIT: Example taken from Vuetify Documentation
+// https://vuetifyjs.com/en/styles/spacing#playground
 
-    data: () => ({
-      ecosystem: [
-        {
-          text: 'vuetify-loader',
-          href: 'https://github.com/vuetifyjs/vuetify-loader',
-        },
-        {
-          text: 'github',
-          href: 'https://github.com/vuetifyjs/vuetify',
-        },
-        {
-          text: 'awesome-vuetify',
-          href: 'https://github.com/vuetifyjs/awesome-vuetify',
-        },
+export default {
+  name: 'annitest',
+  data: () => {
+    return {
+      directions: ['t', 'b', 'l', 'r', 's', 'e', 'x', 'y', 'a'],
+      paddingSizes: ['auto', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      marginSizes: [
+        'auto',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
+        'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'n10', 'n11', 'n12'
       ],
-      importantLinks: [
-        {
-          text: 'Documentation',
-          href: 'https://vuetifyjs.com',
-        },
-        {
-          text: 'Chat',
-          href: 'https://community.vuetifyjs.com',
-        },
-        {
-          text: 'Made with Vuetify',
-          href: 'https://madewithvuejs.com/vuetify',
-        },
-        {
-          text: 'Twitter',
-          href: 'https://twitter.com/vuetifyjs',
-        },
-        {
-          text: 'Articles',
-          href: 'https://medium.com/vuetify',
-        },
-      ],
-      whatsNext: [
-        {
-          text: 'Explore components',
-          href: 'https://vuetifyjs.com/components/api-explorer',
-        },
-        {
-          text: 'Select a layout',
-          href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-        },
-        {
-          text: 'Frequently Asked Questions',
-          href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-        },
-      ],
-    }),
+      paddingDirection: 'a',
+      paddingSize: '2',
+      marginDirection: 'a',
+      marginSize: '2',
+      playgroundText: 'Use the controls above to try out the different spacing helpers'
+    }
+  },
+  computed: {
+    computedPadding () {
+      return `p${this.paddingDirection}-${this.paddingSize}`
+    },
+    computedMargin () {
+      return `m${this.marginDirection}-${this.marginSize}`
+    }
   }
+}
 </script>
+
+<style scoped>
+.spacing-playground .v-select .v-input__prepend-outer, .spacing-playground .v-select .v-input__append-outer{
+  margin-top: 0.55rem;
+  margin-right: 0.2rem;
+}
+</style>
