@@ -14,7 +14,7 @@
           transition="scale-transition"
           width="40"
         />
-
+        <h1>Brought to you by the fledglings</h1>
         <v-img
           alt="Vuetify Name"
           class="shrink mt-1 hidden-sm-and-down"
@@ -38,8 +38,8 @@
     </v-app-bar>
 
     <v-main>
-      <HelloWorld/>
       <annitest/>
+      <HelloWorld/>
     </v-main>
   </v-app>
 </template>
