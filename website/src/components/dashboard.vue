@@ -52,6 +52,9 @@
 
 
             </v-card>
+            <v-row align="center" justify="center">
+                THERE CAN BE MORE TEXT HERE
+            </v-row>
             </v-col>
             <v-col></v-col>
             </v-row>
