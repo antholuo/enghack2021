@@ -114,20 +114,27 @@ def load_repo(git_remote, username, password):
     os.chdir(repo_location)
     # Format: https://username:password@myrepository.biz/file.git
     credential_url = f'{git_remote.split("//")[0]}//{username}:{password}@{git_remote.split("//")[1]}'
-    remote = run_shell('git config --get remote.origin.url')
+    remote = run_shell('git config --get remote.origin.url').strip()
     if credential_url == remote:
         os.system('git pull')
     else:
+        pass
+        os.chdir("..")
         shutil.rmtree(repo_location)
-        os.system('git clone credential_url .')
+        os.mkdir(repo_location)
+        os.chdir(repo_location)
+        os.system(f'git clone {credential_url} .')
 
 
-def restore():
+def restore(git_remote, username, password):
     try:
         os.chdir(repo_location)
     except:
-        print("Image does not exist")
-        exit(1)
+        load_repo(git_remote, username, password)
+        try:
+            os.chdir(repo_location)
+        except:
+            exit(1)
     install_apt_packages()
     with open(f'{repo_location}/flatpak.list', 'r') as file:
         for line in file.readlines():
@@ -140,4 +147,5 @@ def restore():
     restore_app_data()
     run_shell("dconf load / < donf-backup.txt")
 
-load_repo()
+
+#load_repo('url', 'username', 'password')

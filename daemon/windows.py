@@ -4,8 +4,7 @@ from pathlib import Path
 import os
 from consts import app_name, dev
 import urllib.request
-from linux import create_repo, push_repo
-
+from linux import create_repo, push_repo, load_repo
 
 home_dir = str(Path.home())
 
@@ -34,10 +33,18 @@ def backup(git_remote, username, password):
     push_repo(repo_location)
 
 
-def restore():
+def restore(git_remote, username, password):
+    try:
+        os.chdir(repo_location)
+    except:
+        load_repo(git_remote, username, password)
+        try:
+            os.chdir(repo_location)
+        except:
+            exit(1)
     os.system(f"{repo_location}\\installer.exe")
     dir = home_dir + "\\AppData\\Roaming"
     appdata = repo_location + "\\AppData\\Roaming"
     os.system(f"powershell.exe Copy-Item -Recurse {repo_location} {dir}")
 
-restore()
+
