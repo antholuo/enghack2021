@@ -1,0 +1,6 @@
+
+daemon/cache/
+
+daemon/venv/
+
+daemon/__pycache__/
