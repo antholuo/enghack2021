@@ -31,6 +31,20 @@
 
     <v-main>
       <dashboard/>
+      <v-row>
+            <v-col md="12">    
+                <v-row no-gutters>
+                    <v-col md="2"></v-col>
+                    <v-col md="3">
+                        <v-card tile flat color="error">Stats here</v-card>
+                    </v-col>
+                    <v-col md="5">
+                        <backups/>
+                    </v-col>
+                    <v-col md="2"></v-col>
+                </v-row>
+            </v-col>
+        </v-row>
       <HelloWorld/>
     </v-main>
   </v-app>
@@ -39,6 +53,7 @@
 <script>
 import HelloWorld from './components/HelloWorld';
 import dashboard from './components/dashboard';
+import backups from './components/backups';
 
 export default {
   name: 'App',
@@ -46,6 +61,7 @@ export default {
   components: {
     HelloWorld,
     dashboard,
+    backups,
   },
 
   data: () => ({
