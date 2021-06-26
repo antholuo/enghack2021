@@ -71,9 +71,9 @@ export default {
       ],
       selectedItem: 1,
       items: [
-          { title: 'Dashboard', icon: 'mdi-view-dashboard' },
-          { title: 'Photos', icon: 'mdi-image' },
-          { title: 'About', icon: 'mdi-help-box' },
+          { title: 'Backup1', icon: 'mdi-view-dashboard' },
+          { title: 'Backup2', icon: 'mdi-view-dashboard' },
+          { title: 'Backup3', icon: 'mdi-view-dashboard' },
         ],
     })
 }
