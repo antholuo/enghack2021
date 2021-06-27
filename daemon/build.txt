@@ -1,0 +1,4 @@
+# Unix
+pyinstaller app.py -y -F --add-data html:html
+# Windows
+pyinstaller app.py -y -F --add-data html;html

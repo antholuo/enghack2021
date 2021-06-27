@@ -8,31 +8,44 @@ import webbrowser
 import consts
 import os
 import pickle
+import sys
 from pathlib import Path
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
+def self_dir():
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    return base_path
+
 
 app = Flask(__name__,
-            template_folder=os.path.join(Path(__file__).parents[1], 'website', 'dist'))
+            template_folder=os.path.join(self_dir(), 'html'))
 cors = CORS(app)
 
 cred = {}
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'rb') as file:
-    try:
+try:
+    with open(os.path.join(self_dir(), 'credentials'), 'rb') as file:
         old = pickle.load(file)
         cred = {'url': old['url'],
                 'username': old['username'],
                 'password': old['password']}
-    except FileNotFoundError:
-        cred = {'url': '', 'username': '', 'password': ''}
+except FileNotFoundError:
+    cred = {'url': '', 'username': '', 'password': ''}
 
 
 @app.route('/js/<path:path>')
 def send_js(path):
-    return send_from_directory(os.path.join(Path(__file__).parents[1], 'website', 'dist', 'js'), path)
+    return send_from_directory(os.path.join(self_dir(), 'html', 'js'), path)
 
 
 @app.route('/css/<path:path>')
 def send_css(path):
-    return send_from_directory(os.path.join(Path(__file__).parents[1], 'website', 'dist', 'css'), path)
+    return send_from_directory(os.path.join(self_dir(), 'html', 'css'), path)
 
 
 @app.route('/')
@@ -53,15 +66,15 @@ def status():
 @app.route('/credentials')
 def credentials():
     global cred
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'rb') as file:
-        try:
+    try:
+        with open(os.path.join(self_dir(), 'credentials'), 'rb') as file:
             old = pickle.load(file)
             cred = {'url': request.args['url'] or old['url'],
                     'username': request.args['username'] or old['username'],
                     'password': request.args['password'] or old['password']}
-        except FileNotFoundError:
-            cred = {'url': '', 'username': '', 'password': ''}
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'wb') as file:
+    except FileNotFoundError:
+        cred = {'url': '', 'username': '', 'password': ''}
+    with open(os.path.join(self_dir(), 'credentials'), 'wb') as file:
         pickle.dump(cred, file)
     return jsonify(cred)
 
