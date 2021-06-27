@@ -154,7 +154,7 @@ export default {
         restore(){
             this.restoring=true
             this.steps=this.restoreSteps
-            axios.get('http://localhost:5000/backup')
+            axios.get('http://localhost:5000/restore')
         }
     },
     data: () => ({
