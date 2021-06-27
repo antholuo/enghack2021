@@ -12,6 +12,8 @@ from consts import app_name, dev
 home_dir = os.path.expanduser("~")
 repo_location = os.getcwd() + "/cache" if dev else f"{home_dir}/.cache/{app_name}"
 
+step = 0
+
 
 # Helper functions
 def run_shell(cmd):
@@ -93,17 +95,23 @@ def restore_app_data():
 
 # Non-helper functions
 def backup(git_remote, username, password):
+    global step
+    step = 0
     try:
         os.mkdir(repo_location)
     except:
         pass
     create_repo(git_remote, username, password, repo_location)
+    step = 1
     write_output('dconf-backup.txt', 'dconf dump /')
     get_apt_packages()
     write_output('flatpak.list', 'flatpak list --app --columns application')
     write("snap.list", os.popen("snap list | awk '!/disabled/{print $1}' | awk '{if(NR>1)print}'").read())
+    step = 2
     get_app_data()
+    step = 3
     push_repo(repo_location)
+    step = 4
 
 
 def load_repo(git_remote, username, password):
@@ -127,6 +135,8 @@ def load_repo(git_remote, username, password):
 
 
 def restore(git_remote, username, password):
+    global step
+    step = 0
     try:
         os.chdir(repo_location)
     except:
@@ -135,6 +145,7 @@ def restore(git_remote, username, password):
             os.chdir(repo_location)
         except:
             exit(1)
+    step = 1
     install_apt_packages()
     with open(f'{repo_location}/flatpak.list', 'r') as file:
         for line in file.readlines():
@@ -144,8 +155,9 @@ def restore(git_remote, username, password):
         for line in file.readlines():
             while line != '':
                 run_shell(f'sudo snap install {line} --classic')
+    step = 2
     restore_app_data()
     run_shell("dconf load / < donf-backup.txt")
+    step = 3
 
-
-#load_repo('url', 'username', 'password')
+# load_repo('url', 'username', 'password')
