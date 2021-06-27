@@ -14,10 +14,10 @@ def install_apt_packages():
     available = []
     with open(f'{repo_location}/packageList.txt', 'r') as file:
         for p in file.readlines():
-            if p.strip() in packages.keys():
+            p = p.strip()
+            if p in packages.keys() and not packages[p].is_inst_broken:
                 available.append(p.strip())
     available = " ".join(available)
-    print(available)
     os.system(f'sudo apt-get install {available} --ignore-missing -y -q')
 
 
