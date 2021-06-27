@@ -23,7 +23,6 @@ def self_dir():
 
 
 repo_location = os.getcwd() + "/cache" if dev else f"{home_dir}/.cache/{app_name}"
-
 step = 0
 
 
@@ -81,8 +80,7 @@ def get_apt_packages():
     with open(f'{repo_location}/packageList.txt', 'w') as file:
         for name in packages.keys():
             pk = packages[name]
-            if pk.is_installed and not (pk.is_now_broken or pk.is_auto_removable
-                                        or pk.is_auto_installed or 'lib' in name):
+            if pk.is_installed and not (pk.is_now_broken or pk.is_auto_removable):
                 file.write(name + '\n')
     file.close()
 
@@ -92,7 +90,7 @@ def restore_app_data():
     subdirs = next(os.walk('.'))[1]
     subdirs.remove('sources.list.d')
     for dir in subdirs:
-        run_shell(f'rsync --recursive {dir} {home_dir}/{dir}')
+        run_shell(f'rsync --recursive {dir} {home_dir}')
 
 
 # Non-helper functions

@@ -9,10 +9,23 @@ import consts
 import os
 import pickle
 import sys
-from pathlib import Path
 import logging
+
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
+
+
+def datastore_location():
+    if platform.system() == 'Linux':
+        return os.path.join(os.path.expanduser("~"), '.config', consts.app_name)
+    elif platform.system() == 'Windows':
+        return os.path.join(os.path.expanduser("~"), consts.app_name)
+
+try:
+    os.mkdir(datastore_location())
+except FileExistsError:
+    pass
+
 
 def self_dir():
     try:
@@ -29,7 +42,7 @@ cors = CORS(app)
 
 cred = {}
 try:
-    with open(os.path.join(self_dir(), 'credentials'), 'rb') as file:
+    with open(os.path.join(datastore_location(), 'credentials'), 'rb') as file:
         old = pickle.load(file)
         cred = {'url': old['url'],
                 'username': old['username'],
@@ -67,14 +80,14 @@ def status():
 def credentials():
     global cred
     try:
-        with open(os.path.join(self_dir(), 'credentials'), 'rb') as file:
+        with open(os.path.join(datastore_location(), 'credentials'), 'rb') as file:
             old = pickle.load(file)
             cred = {'url': request.args['url'] or old['url'],
                     'username': request.args['username'] or old['username'],
                     'password': request.args['password'] or old['password']}
     except FileNotFoundError:
         cred = {'url': '', 'username': '', 'password': ''}
-    with open(os.path.join(self_dir(), 'credentials'), 'wb') as file:
+    with open(os.path.join(datastore_location(), 'credentials'), 'wb') as file:
         pickle.dump(cred, file)
     return jsonify(cred)
 
