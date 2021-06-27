@@ -1,4 +1,4 @@
 # Unix
-pyinstaller app.py -y -F --add-data html:html
+ pyinstaller app.py -y -F --add-data html:html --add-data linux_admin.py:.
 # Windows
-pyinstaller app.py -y -F --add-data html;html
+ pyinstaller app.py -y -F --add-data html;html --add-data linux_admin.py;.

@@ -2,6 +2,7 @@ import os
 import subprocess
 import shutil
 import sys
+
 try:
     import apt
     import apt_pkg
@@ -10,7 +11,17 @@ except:
 from consts import app_name, dev
 
 home_dir = os.path.expanduser("~")
-base_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+
+def self_dir():
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    return base_path
+
+
 repo_location = os.getcwd() + "/cache" if dev else f"{home_dir}/.cache/{app_name}"
 
 step = 0
@@ -130,7 +141,7 @@ def restore(git_remote, username, password):
     step = 0
     load_repo(git_remote, username, password)
     step = 1
-    os.system(f'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY python3 {base_path}/linux_admin.py {repo_location}')
+    os.system(f'pkexec env DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY python3 {self_dir()}/linux_admin.py {repo_location}')
     with open(f'{repo_location}/flatpak.list', 'r') as file:
         for line in file.readlines():
             run_shell(f'flatpak install flathub {line.strip()} -y --noninteractive')

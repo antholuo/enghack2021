@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 
 repo_location = sys.argv[1]
 
@@ -16,6 +17,5 @@ def install_snaps():
             os.system(f'sudo snap install {line.strip()} --classic')
 
 
-if __name__ == "__main__":
-    install_apt_packages()
-    install_snaps()
+install_apt_packages()
+install_snaps()
