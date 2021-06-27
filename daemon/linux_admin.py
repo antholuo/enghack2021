@@ -1,5 +1,6 @@
 import os
 import sys
+import apt
 
 repo_location = sys.argv[1]
 
@@ -9,7 +10,15 @@ def install_apt_packages():
     os.system(f'sudo cp -Rp {repo_location}/sources.list /etc/apt/sources.list ')
     os.system(f'sudo apt-key add {repo_location}/repo.keys')
     os.system(f'sudo apt update')
-    os.system(f'sudo xargs -a {repo_location}/packageList.txt apt-get install --ignore-missing -y -q')
+    packages = apt.Cache()
+    available = []
+    with open(f'{repo_location}/packageList.txt', 'r') as file:
+        for p in file.readlines():
+            if p.strip() in packages.keys():
+                available.append(p.strip())
+    available = " ".join(available)
+    print(available)
+    os.system(f'sudo apt-get install {available} --ignore-missing -y -q')
 
 
 def install_snaps():
