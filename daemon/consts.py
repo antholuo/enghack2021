@@ -1,2 +1,2 @@
-dev = True
-app_name = "frostfound"
+dev = False
+app_name = "PogOSBackup"

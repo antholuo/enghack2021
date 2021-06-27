@@ -1,6 +1,5 @@
-import io
-
-from flask import Flask, jsonify, blueprints, request, redirect, url_for
+import multiprocessing
+from flask import Flask, jsonify, send_from_directory, render_template, request
 from flask_cors import CORS
 import platform
 import linux
@@ -9,12 +8,14 @@ import webbrowser
 import consts
 import os
 import pickle
+from pathlib import Path
 
-app = Flask(__name__)
+app = Flask(__name__,
+            template_folder=os.path.join(Path(__file__).parents[1], 'website', 'dist'))
 cors = CORS(app)
 
 cred = {}
-with open(f'{os.path.dirname(os.path.realpath(__file__))}/credentials', 'rb') as file:
+with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'rb') as file:
     try:
         old = pickle.load(file)
         cred = {'url': old['url'],
@@ -22,6 +23,21 @@ with open(f'{os.path.dirname(os.path.realpath(__file__))}/credentials', 'rb') as
                 'password': old['password']}
     except FileNotFoundError:
         cred = {'url': '', 'username': '', 'password': ''}
+
+
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory(os.path.join(Path(__file__).parents[1], 'website', 'dist', 'js'), path)
+
+
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory(os.path.join(Path(__file__).parents[1], 'website', 'dist', 'css'), path)
+
+
+@app.route('/')
+def root():
+    return render_template("index.html")
 
 
 @app.route('/step')
@@ -37,7 +53,7 @@ def status():
 @app.route('/credentials')
 def credentials():
     global cred
-    with open(f'{os.path.dirname(os.path.realpath(__file__))}/credentials', 'rb') as file:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'rb') as file:
         try:
             old = pickle.load(file)
             cred = {'url': request.args['url'] or old['url'],
@@ -45,7 +61,7 @@ def credentials():
                     'password': request.args['password'] or old['password']}
         except FileNotFoundError:
             cred = {'url': '', 'username': '', 'password': ''}
-    with open(f'{os.path.dirname(os.path.realpath(__file__))}/credentials', 'wb') as file:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'credentials'), 'wb') as file:
         pickle.dump(cred, file)
     return jsonify(cred)
 
@@ -74,7 +90,12 @@ def restore():
     return ''
 
 
+def flask():
+    app.run()
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    p = multiprocessing.Process(target=flask)
+    p.start()
     if not consts.dev:
         webbrowser.open('http://127.0.0.1:5000', new=2)
