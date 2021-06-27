@@ -5,7 +5,7 @@ repo_location = sys.argv[1]
 
 
 def install_apt_packages():
-    os.system(f'sudo cp -Rp {repo_location}/sources.list.d /etc/apt/sources.list.d/')
+    os.system(f'sudo cp -Rp {repo_location}/sources.list.d /etc/apt/')
     os.system(f'sudo cp -Rp {repo_location}/sources.list /etc/apt/sources.list ')
     os.system(f'sudo apt-key add {repo_location}/repo.keys')
     os.system(f'sudo apt update')
