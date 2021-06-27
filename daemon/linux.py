@@ -64,10 +64,10 @@ def push_repo(repo):
 
 
 def get_app_data():
-    dirs = ".config .var snap .local/share/gnome-shell .local/share/fonts \
-    .local/share/backgrounds .local/share/applications .local/share/icons .local/share/themes .local/share/keyrings".split()
+    dirs = ".config .var .themes snap .local/share/gnome-shell .local/share/fonts \
+    .local/share/backgrounds .local/share/applications .local/share/icons .local/share/keyrings".split()
     dirs[:] = [f"{home_dir}/" + d for d in dirs]
-    os.popen(f'cp -Rpu {" ".join(dirs)} {repo_location}')
+    os.popen(f'cp -Ru {" ".join(dirs)} {repo_location}')
 
 
 def get_apt_packages():
@@ -90,9 +90,9 @@ def restore_app_data():
     subdirs = next(os.walk('.'))[1]
     subdirs.remove('sources.list.d')
     subdirs.remove('.git')
-    share_dir=['gnome-shell', 'fonts', 'backgrounds', 'applications', 'icons', 'themes', 'keyrings']
+    share_dir = ['gnome-shell', 'fonts', 'backgrounds', 'applications', 'icons', 'keyrings']
     for dir in subdirs:
-        if dir.split('/')[len(dir.split('/'))-1] in share_dir:
+        if dir.split('/')[len(dir.split('/')) - 1] in share_dir:
             run_shell(f'rsync --recursive {dir} {home_dir}/.local/share')
         else:
             run_shell(f'rsync --recursive {dir} {home_dir}')
